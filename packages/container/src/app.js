@@ -1,5 +1,6 @@
 import React, { lazy, Suspense } from "react";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { Router, Route, Switch, Redirect } from "react-router-dom";
+import { createBrowserHistory } from "history";
 import {
   StylesProvider,
   createGenerateClassName,
@@ -10,16 +11,25 @@ import { Progress } from "./components/progress";
 
 const MarketingLazy = lazy(() => import("./pages/marketing"));
 const AuthLazy = lazy(() => import("./pages/auth"));
+const DashboardLazy = lazy(() => import("./pages/dashboard"));
 
 const generateClassName = createGenerateClassName({
   productionPrefix: "co",
 });
 
+const history = createBrowserHistory();
+
 export default function App() {
   const [isSignedIn, setIsSignedIn] = React.useState(false);
 
+  React.useEffect(() => {
+    if (isSignedIn) {
+      history.push("/dashboard");
+    }
+  }, [isSignedIn]);
+
   return (
-    <BrowserRouter>
+    <Router history={history}>
       <StylesProvider injectFirst generateClassName={generateClassName}>
         <Header
           isSignedIn={isSignedIn}
@@ -30,12 +40,16 @@ export default function App() {
             <Route path="/auth">
               <AuthLazy onSignIn={() => setIsSignedIn(true)} />
             </Route>
+            <Route path="/dashboard">
+              {!isSignedIn && <Redirect to="/" />}
+              <DashboardLazy />
+            </Route>
             <Route path="/">
               <MarketingLazy isSignedIn={isSignedIn} />
             </Route>
           </Switch>
         </Suspense>
       </StylesProvider>
-    </BrowserRouter>
+    </Router>
   );
 }
