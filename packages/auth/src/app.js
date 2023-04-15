@@ -5,20 +5,24 @@ import {
   createGenerateClassName,
 } from "@material-ui/core/styles";
 
-import Landing from "./pages/landing";
-import Pricing from "./pages/pricing";
+import Signin from "./pages/Signin";
+import Signup from "./pages/Signup";
 
 const generateClassName = createGenerateClassName({
-  productionPrefix: "ma",
+  productionPrefix: "au",
 });
 
-export default function App({ history }) {
+export default function App({ history, onSignIn }) {
   return (
     <StylesProvider injectFirst generateClassName={generateClassName}>
       <Router history={history}>
         <Switch>
-          <Route exact path="/" component={Landing} />
-          <Route path="/pricing" component={Pricing} />
+          <Route path="/auth/signin">
+            <Signin onSignIn={onSignIn} />
+          </Route>
+          <Route path="/auth/signup">
+            <Signup onSignIn={onSignIn} />
+          </Route>
         </Switch>
       </Router>
     </StylesProvider>
